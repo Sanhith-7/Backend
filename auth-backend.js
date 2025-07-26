@@ -86,7 +86,7 @@ app.post('/reset-password', (req, res) => {
     delete otps[email];
     res.json({ success: true });
 });
-
-app.listen(4000, () => {
-    console.log('Auth backend running on http://localhost:4000');
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`Auth backend running on http://localhost:${PORT}`);
 });

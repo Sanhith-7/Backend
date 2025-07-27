@@ -1,20 +1,38 @@
-const { otps, transporter, EMAIL_USER } = require('./_shared');
+const { otps, transporter, EMAIL_USER, handleCors } = require('./_shared');
 
 module.exports = async (req, res) => {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method Not Allowed' });
+    // Handle CORS preflight
+    if (handleCors(req, res)) return;
+    
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method Not Allowed' });
+    }
+
     const { email } = req.body;
-    if (!email) return res.status(400).json({ error: 'Email required' });
+    
+    if (!email) {
+        return res.status(400).json({ error: 'Email is required' });
+    }
+    
+    // Generate 6-digit OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    otps[email] = { otp, expires: Date.now() + 10 * 60 * 1000, verified: false };
+    const expires = Date.now() + 10 * 60 * 1000; // 10 minutes from now
+    
+    // Store OTP
+    otps[email] = { otp, expires, verified: false };
+    
+    // Send email
     try {
         await transporter.sendMail({
-            from: EMAIL_USER,
+            from: `"F1 Streetwear" <${EMAIL_USER}>`,
             to: email,
             subject: 'Your OTP Code',
-            text: `Your OTP code is: ${otp}`
+            text: `Your OTP code is: ${otp}. It will expire in 10 minutes.`
         });
-        res.json({ success: true });
-    } catch (e) {
+        
+        res.json({ success: true, message: 'OTP sent successfully' });
+    } catch (error) {
+        console.error('Error sending OTP email:', error);
         res.status(500).json({ error: 'Failed to send OTP' });
     }
 };

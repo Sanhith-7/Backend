@@ -1,14 +1,21 @@
 {
   "name": "auth-backend",
   "version": "1.0.0",
-  "main": "auth-backend.js",
+  "main": "api/_shared.js",
   "scripts": {
-    "start": "node auth-backend.js"
+    "start": "vercel dev",
+    "dev": "vercel dev"
   },
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "nodemailer": "^7.0.5"
+  },
+  "devDependencies": {
+    "@vercel/node": "^4.2.5"
+  },
+  "engines": {
+    "node": ">=14.x"
   }
 }
